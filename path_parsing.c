@@ -6,7 +6,7 @@
 /*   By: mle-brie <mle-brie@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:28:44 by mle-brie          #+#    #+#             */
-/*   Updated: 2025/03/11 11:28:45 by mle-brie         ###   ########.fr       */
+/*   Updated: 2025/03/12 14:21:14 by mle-brie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,6 @@ void	free_tab(char **tab)
 	free(tab);
 }
 
-/*
-I first need to find the PATH line, so, for this, use a substr and a strcmp
-Then, I will be able to use a ft_split inside the path with ':'
-and a strjoin to add another / and identify a path
-=> ie. check if it's a valid command 
-*/
-
 char	*find_path(char *name, char **env)
 {
 	int		i;
@@ -42,13 +35,13 @@ char	*find_path(char *name, char **env)
 	while (env[i])
 	{
 		j = 0;
-		while (env[i][j] && env[i][j] != '=')//move through every line until you find the =
+		while (env[i][j] && env[i][j] != '=')
 			j++;
 		sub = ft_substr(env[i], 0, j);
 		if (ft_strncmp(sub, name, ft_strlen(name)) == 0)
 		{
 			free(sub);
-			return (env[i] + j + 1);//+ 1 skips =
+			return (env[i] + j + 1);
 		}
 		free(sub);
 		i++;
@@ -59,30 +52,30 @@ char	*find_path(char *name, char **env)
 char	*get_path(char *cmd, char **env)
 {
 	int		i;
-	char	**possible_paths;
-	char	**splitted_cmd;//in case the cmd include multiple args (like ls -la)
+	char	**all_paths;
+	char	**s_cmd;
 	char	*path_part;
 	char	*executable;
 
-	if(!(possible_paths = ft_split(find_path("PATH", env), ':')))
-		return(cmd);
-	splitted_cmd = ft_split(cmd, ' ');
+	executable = NULL;
+	if(!(all_paths = ft_split(find_path("PATH", env), ':')))
+		return(free_tab(all_paths), NULL);
+	if (!cmd || !(*cmd))
+		return (free_tab(all_paths), NULL);
+	s_cmd = ft_split(cmd, ' ');
 	i = -1;
-	while (possible_paths[++i])
+	while (all_paths[++i])
 	{
-		path_part = ft_strjoin(possible_paths[i], "/");//make it a full path
-		executable = ft_strjoin(path_part, splitted_cmd[0]);
+		path_part = ft_strjoin(all_paths[i], "/");
+		executable = ft_strjoin(path_part, s_cmd[0]);
 		free(path_part);
-		if (access(executable, F_OK | X_OK) == 0)//if it exists and is executable
-		{
-			free_tab(splitted_cmd);
-			return (executable);//return the path if it was found
-		}
-		free(executable);//if not found, so that it does it again
+		if (access(executable, F_OK | X_OK) == 0)
+			return (free_tab(s_cmd), free_tab(all_paths), executable);
+		free(executable);
 	}
-	free_tab(possible_paths);
-	free_tab(splitted_cmd);
-	return(cmd);//if nothing was found, return cmd as it is
+	free_tab(all_paths);
+	free_tab(s_cmd);
+	return(NULL);
 }
 
 // int main(int ac, char *av[], char **env)
