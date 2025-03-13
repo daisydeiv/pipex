@@ -6,7 +6,7 @@
 /*   By: mle-brie <mle-brie@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:28:44 by mle-brie          #+#    #+#             */
-/*   Updated: 2025/03/12 14:21:14 by mle-brie         ###   ########.fr       */
+/*   Updated: 2025/03/12 15:06:00 by mle-brie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,9 @@ char	*get_path(char *cmd, char **env)
 	char	*executable;
 
 	executable = NULL;
-	if(!(all_paths = ft_split(find_path("PATH", env), ':')))
-		return(free_tab(all_paths), NULL);
+	all_paths = ft_split(find_path("PATH", env), ':');
+	if (!all_paths)
+		return (free_tab(all_paths), NULL);
 	if (!cmd || !(*cmd))
 		return (free_tab(all_paths), NULL);
 	s_cmd = ft_split(cmd, ' ');
@@ -73,9 +74,7 @@ char	*get_path(char *cmd, char **env)
 			return (free_tab(s_cmd), free_tab(all_paths), executable);
 		free(executable);
 	}
-	free_tab(all_paths);
-	free_tab(s_cmd);
-	return(NULL);
+	return (free_tab(s_cmd), free_tab(all_paths), NULL);
 }
 
 // int main(int ac, char *av[], char **env)

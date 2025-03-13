@@ -16,7 +16,7 @@ OBJS := $(SRCS:%.c=$(OBJDIR)/%.o)
 all: $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT)
-	@echo "🔧 Compiling files... 🔨\n🛠️ Done. 🛠️"
+	@echo "🔧 Compiling files... 🔨\n🛠️  Done. 🛠️"
 	@$(CC) $(FLAGS) $(OBJS) $(LIBFT) -o $@
 
 $(LIBFT):

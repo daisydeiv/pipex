@@ -6,7 +6,7 @@
 /*   By: mle-brie <mle-brie@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:29:20 by mle-brie          #+#    #+#             */
-/*   Updated: 2025/03/12 14:26:17 by mle-brie         ###   ########.fr       */
+/*   Updated: 2025/03/13 10:56:36 by mle-brie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,15 @@ void	child_process(int fd1, int end[], char *cmd1, char **env)
 	dup2(end[1], STDOUT_FILENO);
 	close(fd1);
 	close(end[1]);
-	if (!(path = get_path(cmd1, env)))
+	close (end[0]);
+	path = get_path(cmd1, env);
+	if (!path)
 	{
 		free_tab(s_cmd1);
 		exit(EXIT_FAILURE);
 	}
 	if (execve(path, s_cmd1, env) == -1)
 	{
-		// close (end[0]) as it's the only one not closed?
 		free_tab(s_cmd1);
 		ft_putstr_fd("execve() failed for cmd1", 2);
 		exit(EXIT_FAILURE);
@@ -45,8 +46,9 @@ void	parent_process(int fd2, int end[], char *cmd2, char **env)
 	dup2(end[0], STDIN_FILENO);
 	dup2(fd2, STDOUT_FILENO);
 	close(fd2);
-	// close(end[0]);
-	if (!(path = get_path(cmd2, env)))
+	close(end[0]);
+	path = get_path(cmd2, env);
+	if (!path)
 	{
 		free_tab(s_cmd2);
 		exit(EXIT_FAILURE);
